@@ -13,5 +13,5 @@ import lombok.Data;
 public class PhoneNumber {
 
     private String number;
-    private PhoneType type;
+   // private PhoneType type;
 }

@@ -35,7 +35,6 @@ public class ProtobufUtils {
                     if (name1.equals("java.util.List")){
                         methodName = methodName+"List";
                     }
-                    addressBook.getPeopleList();
                     Method pbGetMethod = addressBook.getClass().getMethod(methodName);
 
                     Object value = pbGetMethod.invoke(addressBook);
