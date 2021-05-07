@@ -5,6 +5,7 @@ import com.example.demoprotobuf.service.ProtobufTestService;
 import com.example.demoprotobuf.utils.ProtobufUtils;
 import com.google.protobuf.Descriptors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +32,7 @@ public class ProtobufTestController {
 
     @GetMapping(value = "/demo/test")
     public   AddressBookVO   getPersonProto() {
-        AddressBookProto.Person.Builder personBuilder = AddressBookProto.Person.newBuilder();
+      AddressBookProto.Person.Builder personBuilder = AddressBookProto.Person.newBuilder();
 
         AddressBookProto.Person.PhoneNumber.Builder phoneNumber = AddressBookProto.Person.PhoneNumber.newBuilder();
 
@@ -45,7 +46,7 @@ public class ProtobufTestController {
         builder.addPeople(personBuilder.build());
 
         AddressBookVO addressBookVO = ProtobufUtils.fromProtoBuffer(builder.build(), AddressBookVO.class);
-        System.out.println(addressBookVO);
+        //System.out.println(addressBookVO);
         return addressBookVO;
 
     }

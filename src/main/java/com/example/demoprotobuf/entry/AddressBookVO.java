@@ -12,8 +12,8 @@ import java.util.List;
  * @date 2021/5/7 18:09
  */
 @Data
-@ToString
+//@ToString
 public class AddressBookVO {
 
-    private List<Person> person;
+    private List<Person> people;
 }

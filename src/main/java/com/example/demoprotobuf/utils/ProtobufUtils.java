@@ -25,10 +25,18 @@ public class ProtobufUtils {
             if (modelFields!=null&&modelFields.length>0){
                 for (Field modelField : modelFields) {
                     String fieldName = modelField.getName();
-                    Class<?> type = modelField.getType();
+
                     String name = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
                     Class fieldType = modelField.getType();
-                    Method pbGetMethod = addressBook.getClass().getMethod("get" + name);
+                    Class<?> type = modelField.getType();
+                    String methodName = "get" + name;
+                    String name1 = type.getName();
+                    System.out.println(name1);
+                    if (name1.equals("java.util.List")){
+                        methodName = methodName+"List";
+                    }
+                    addressBook.getPeopleList();
+                    Method pbGetMethod = addressBook.getClass().getMethod(methodName);
 
                     Object value = pbGetMethod.invoke(addressBook);
 
