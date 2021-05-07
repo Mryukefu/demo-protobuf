@@ -1,0 +1,7 @@
+syntax = "proto3";
+option java_outer_classname = "SearchRequestProto";
+message SearchRequest {
+  string query = 2;
+  string page_number = 3;
+  string result_per_page = 4;
+}
