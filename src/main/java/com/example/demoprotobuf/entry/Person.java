@@ -20,7 +20,7 @@ public class Person {
 
     private String email;
 
-   // private List<PhoneNumber> phones;
+   private List<PhoneNumber> phones;
 
 
 }

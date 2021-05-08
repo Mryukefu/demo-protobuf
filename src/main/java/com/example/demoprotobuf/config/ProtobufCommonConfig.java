@@ -8,7 +8,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Collections;
 
 //@Configuration
-public class CommonConfig {
+public class ProtobufCommonConfig {
 
     /**
      * protobuf 序列化
