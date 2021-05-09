@@ -1,0 +1,33 @@
+syntax = "proto3";
+option java_outer_classname = "PersonResultProto";
+
+message Person {
+   string name = 1;
+   int32 id = 2;
+  repeated PhoneNumber phones = 3;
+   string email = 4;
+
+  message PhoneNumber {
+     string number = 1;
+     PhoneType type = 2;
+  }
+
+  enum PhoneType {
+    MOBILE = 0;
+    HOME = 1;
+    WORK = 2;
+  }
+
+
+
+}
+
+
+message PersonResult {
+  int32 code= 1;
+  string message =2;
+  Person person = 3;
+}
+
+
+

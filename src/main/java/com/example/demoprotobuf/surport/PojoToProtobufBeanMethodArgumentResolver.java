@@ -1,7 +1,6 @@
 package com.example.demoprotobuf.surport;
 
 import com.example.demoprotobuf.annotation.ProtobufBodyModule;
-import com.example.demoprotobuf.protoc.AddressBookProto;
 import com.example.demoprotobuf.utils.ProtoBeanUtils;
 import com.google.protobuf.GeneratedMessageV3;
 import org.springframework.core.MethodParameter;
@@ -11,10 +10,6 @@ import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletResponse;
-import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * class desc

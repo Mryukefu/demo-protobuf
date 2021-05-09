@@ -1,5 +1,7 @@
 package com.example.demoprotobuf.surport;
 import com.example.demoprotobuf.annotation.ProtobufModule;
+import com.example.demoprotobuf.protoc.PersonResultProto;
+import com.example.demoprotobuf.utils.JsonResult;
 import com.example.demoprotobuf.utils.ProtoBeanUtils;
 import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.Message;
@@ -57,6 +59,7 @@ public class ProtobufBeanToPojoMethodArgumentResolver implements HandlerMethodAr
             ServletInputStream iii = request.getInputStream();
             byte[] buffer = new byte[len];
             iii.read(buffer, 0, len);
+            System.out.println("出参数");
             for (byte aByte : buffer) {
                 System.out.print(aByte);
             }
@@ -65,7 +68,6 @@ public class ProtobufBeanToPojoMethodArgumentResolver implements HandlerMethodAr
 
             Method parseFrom = aClass.getMethod("parseFrom", byte[].class);
             GeneratedMessageV3 message = (GeneratedMessageV3)parseFrom.invoke(aClass, buffer);
-
             return ProtoBeanUtils.toPojoBean(ann.pojoBean(), message);
 
     }
