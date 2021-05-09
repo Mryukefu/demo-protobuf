@@ -14,14 +14,9 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ProtobufBodyModule {
-    /** 默*/
+public @interface ProtobufResponseModule {
+    /** 生成的java message类*/
     Class<? extends GeneratedMessageV3> proToBean() default GeneratedMessageV3.class;
-
-    Class pojoBean() default Object.class;
-
-    /** 默认值是否必填 **/
-    boolean required() default false;
-    /** 是否打印日志 **/
-    boolean priLog() default false;
+    /** 是否打印日志 日志级别1 - log,2 - debug,3 --err **/
+    int priLog() default 0;
 }

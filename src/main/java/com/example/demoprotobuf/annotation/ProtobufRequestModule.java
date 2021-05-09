@@ -17,14 +17,14 @@ import java.lang.annotation.*;
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ProtobufModule {
-    /** 默*/
-    Class<? extends GeneratedMessageV3> proToBean() default GeneratedMessageV3.class;
+public @interface ProtobufRequestModule {
+    /**  生成的java message类 */
+    Class<? extends GeneratedMessageV3> proToBeanClass() default GeneratedMessageV3.class;
 
-    Class pojoBean() default Object.class;
+    /** java 方法参数的实体类类 */
+    Class paramPojoBeanClass() default Object.class;
 
-    /** 默认值是否必填 **/
-    boolean required() default false;
-    /** 是否打印日志 **/
-    boolean priLog() default false;
+    /** 是否打印日志 日志级别1 - log,2 - debug,3 --err **/
+    int priLog() default 1;
+
 }

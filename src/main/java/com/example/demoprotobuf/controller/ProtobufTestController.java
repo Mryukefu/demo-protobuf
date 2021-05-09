@@ -1,6 +1,6 @@
 package com.example.demoprotobuf.controller;
-import com.example.demoprotobuf.annotation.ProtobufBodyModule;
-import com.example.demoprotobuf.annotation.ProtobufModule;
+import com.example.demoprotobuf.annotation.ProtobufResponseModule;
+import com.example.demoprotobuf.annotation.ProtobufRequestModule;
 import com.example.demoprotobuf.protoc.PersonResultProto;
 import com.example.demoprotobuf.utils.JsonResult;
 import com.example.demoprotobuf.utils.ProtoBeanUtils;
@@ -31,10 +31,11 @@ public class ProtobufTestController {
 
 
     @PostMapping(value="/demo/test",produces = "application/x-protobuf")
-    @ProtobufBodyModule(proToBean = PersonResultProto.PersonResult.class )
-    public JsonResult getPersonProto(@ProtobufModule(proToBean = PersonResultProto.PersonResult.class,
-            pojoBean = JsonResult.class) JsonResult jsonResult){
-        return  jsonResult;
+    @ProtobufResponseModule(proToBean = PersonResultProto.PersonResult.class )
+    public JsonResult getPersonProto(@ProtobufRequestModule(proToBeanClass = PersonResultProto.PersonResult.class,
+            paramPojoBeanClass = JsonResult.class) JsonResult jsonResult){
+            //return JsonResult.fail("失败了");
+            return  jsonResult;
 
     }
 

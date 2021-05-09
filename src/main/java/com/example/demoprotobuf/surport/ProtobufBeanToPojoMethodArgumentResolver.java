@@ -1,46 +1,45 @@
 package com.example.demoprotobuf.surport;
-import com.example.demoprotobuf.annotation.ProtobufModule;
-import com.example.demoprotobuf.protoc.PersonResultProto;
-import com.example.demoprotobuf.utils.JsonResult;
+
+import com.example.demoprotobuf.annotation.ProtobufRequestModule;
 import com.example.demoprotobuf.utils.ProtoBeanUtils;
 import com.google.protobuf.GeneratedMessageV3;
-import com.google.protobuf.Message;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * class desc
- *  将ProtoBean对象转化为POJO对象
+ * protobuf 请求参数转换类
  * @author ykf
  * @date 2021/5/8 10:36
  */
+@Slf4j
 public class ProtobufBeanToPojoMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
     /**
+     * 是否支持这个类型的参数解析
      *
-     *  是否支持这个类型的参数解析
-     * @param methodParameter  方法包装类
+     * @param methodParameter 方法包装类
      * @return {@code boolean}
      * @author ykf
      * @date 2021/5/8 10:40
      */
     @Override
     public boolean supportsParameter(MethodParameter methodParameter) {
-        return methodParameter.hasParameterAnnotation(ProtobufModule.class);
+        return methodParameter.hasParameterAnnotation(ProtobufRequestModule.class);
     }
 
     /**
-     *
      * 进行参数解析
-     * @param parameter  方法包装类
+     *
+     * @param parameter             方法包装类
      * @param modelAndViewContainer
      * @param nativeWebRequest
      * @param webDataBinderFactory
@@ -54,21 +53,43 @@ public class ProtobufBeanToPojoMethodArgumentResolver implements HandlerMethodAr
                                   NativeWebRequest nativeWebRequest,
                                   WebDataBinderFactory webDataBinderFactory) throws Exception {
         //  如果定义得了转换注解的话
-            HttpServletRequest request = nativeWebRequest.getNativeRequest(HttpServletRequest.class);
-            int len = request.getContentLength();
-            ServletInputStream iii = request.getInputStream();
-            byte[] buffer = new byte[len];
-            iii.read(buffer, 0, len);
-            System.out.println("出参数");
-            for (byte aByte : buffer) {
-                System.out.print(aByte);
-            }
-            ProtobufModule ann = parameter.getParameterAnnotation(ProtobufModule.class);
-            Class<? extends GeneratedMessageV3> aClass = ann.proToBean();
+        ProtobufRequestModule ann = parameter.getParameterAnnotation(ProtobufRequestModule.class);
+        if (ann == null) {
+            return null;
+        }
+        HttpServletRequest request = nativeWebRequest.getNativeRequest(HttpServletRequest.class);
+        if (!request.getMethod().equals("POST")) {
+            log.error("[protobuf请求方式错误]只执行post请求");
+            return request.getInputStream();
+        }
+        int len = request.getContentLength();
+        ServletInputStream stream = request.getInputStream();
+        byte[] buffer = new byte[len];
+        stream.read(buffer, 0, len);
+        Class<? extends GeneratedMessageV3> aClass = ann.proToBeanClass();
+        Method parseFrom = aClass.getMethod("parseFrom", byte[].class);
+        GeneratedMessageV3 message = (GeneratedMessageV3) parseFrom.invoke(aClass, buffer);
+        Object param = ProtoBeanUtils.toPojoBean(ann.paramPojoBeanClass(), message);
+        priLog(ann.priLog(), request, param);
+        return param;
+    }
 
-            Method parseFrom = aClass.getMethod("parseFrom", byte[].class);
-            GeneratedMessageV3 message = (GeneratedMessageV3)parseFrom.invoke(aClass, buffer);
-            return ProtoBeanUtils.toPojoBean(ann.pojoBean(), message);
+    public void priLog(Integer priLog, HttpServletRequest request, Object param) {
+        if (priLog == null || priLog <= 0 || priLog >= 4) {
+            return;
+        }
+        if (priLog == 1) {
+            log.info("【请求方法路径】{},[请求方法名称]{}，[请求参数]{}", request.getPathInfo(), request.getMethod(), param);
+            return;
+        }
+        if (priLog == 2) {
+            log.debug("【请求方法路径】{},[请求方法名称]{}，[请求参数]{}", request.getPathInfo(), request.getMethod(), param);
+            return;
+        }
+        if (priLog == 3) {
+            log.error("【请求方法路径】{},[请求方法名称]{}，[请求参数]{}", request.getPathInfo(), request.getMethod(), param);
+            return;
+        }
 
     }
 }
