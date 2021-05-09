@@ -11,7 +11,7 @@ import java.lang.annotation.*;
  * @author ykf
  * @date 2021/5/8 10:30
  */
-@Target({ElementType.METHOD})
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ProtobufBodyModule {

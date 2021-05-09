@@ -1,11 +1,20 @@
 package com.example.demoprotobuf.surport;
 
 import com.example.demoprotobuf.annotation.ProtobufBodyModule;
-import com.example.demoprotobuf.annotation.ProtobufModule;
+import com.example.demoprotobuf.protoc.AddressBookProto;
+import com.example.demoprotobuf.utils.ProtoBeanUtils;
+import com.google.protobuf.GeneratedMessageV3;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.method.support.ModelAndViewContainer;
+
+import javax.servlet.http.HttpServletResponse;
+import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * class desc
@@ -17,7 +26,8 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class PojoToProtobufBeanMethodArgumentResolver implements HandlerMethodReturnValueHandler {
     @Override
     public boolean supportsReturnType(MethodParameter returnType) {
-        return returnType.hasParameterAnnotation(ProtobufBodyModule.class);
+        return (AnnotatedElementUtils.hasAnnotation(returnType.getContainingClass(), ProtobufBodyModule.class) ||
+                returnType.hasMethodAnnotation(ProtobufBodyModule.class));
     }
 
     @Override
@@ -25,6 +35,18 @@ public class PojoToProtobufBeanMethodArgumentResolver implements HandlerMethodRe
                                   MethodParameter returnType,
                                   ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest) throws Exception {
-        System.out.println("ddddd");
+
+        mavContainer.setRequestHandled(true);
+        ProtobufBodyModule methodAnnotation = returnType.getMethodAnnotation(ProtobufBodyModule.class);
+        if (methodAnnotation!=null){
+            Class<? extends GeneratedMessageV3> aClass = methodAnnotation.proToBean();
+            GeneratedMessageV3.Builder newBuilder = (GeneratedMessageV3.Builder)aClass.getMethod("newBuilder").invoke(aClass);
+            ProtoBeanUtils.toProtoBean(newBuilder,returnValue);
+            byte[] bytes = newBuilder.build().toByteArray();
+            webRequest
+                    .getNativeResponse(HttpServletResponse.class)
+                    .getOutputStream()
+                    .write(bytes);
+        }
     }
 }
