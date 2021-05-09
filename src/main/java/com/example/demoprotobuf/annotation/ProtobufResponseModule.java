@@ -19,4 +19,7 @@ public @interface ProtobufResponseModule {
     Class<? extends GeneratedMessageV3> proToBean() default GeneratedMessageV3.class;
     /** 是否打印日志 日志级别1 - log,2 - debug,3 --err **/
     int priLog() default 0;
+
+    /** 构建GeneratedMessageV3 对象 方法名称  **/
+    String builderMethod() default "newBuilder";
 }

@@ -12,6 +12,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.Method;
 
 /**
  * class desc
@@ -38,11 +39,11 @@ public class PojoToProtobufBeanMethodArgumentResolver implements HandlerMethodRe
             return;
         }
             Class<? extends GeneratedMessageV3> aClass = methodAnnotation.proToBean();
-            GeneratedMessageV3.Builder newBuilder = (GeneratedMessageV3.Builder) aClass.getMethod("newBuilder").invoke(aClass);
+            GeneratedMessageV3.Builder newBuilder = (GeneratedMessageV3.Builder) aClass.getMethod(methodAnnotation.builderMethod()).invoke(aClass);
 
             ProtoBeanUtils.toProtoBean(newBuilder, returnValue);
             byte[] bytes = newBuilder.build().toByteArray();
-            priLog(methodAnnotation.priLog(), webRequest, returnValue);
+            priLog(methodAnnotation.priLog(), webRequest,returnType.getMethod(), returnValue);
             webRequest
                     .getNativeResponse(HttpServletResponse.class)
                     .getOutputStream()
@@ -50,21 +51,24 @@ public class PojoToProtobufBeanMethodArgumentResolver implements HandlerMethodRe
 
     }
 
-    public void priLog(Integer priLog, NativeWebRequest webRequest, Object param) {
+    public void priLog(Integer priLog, NativeWebRequest webRequest, Method method, Object param) {
         if (priLog == null || priLog <= 0 || priLog >= 4) {
             return;
         }
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         if (priLog == 1) {
-            log.info("【返回方法路径】{},[返回方法名称]{}，[返回参数]{}", request.getPathInfo(), request.getMethod(), param);
+            log.info("【proto返回参数】[返回方法路径]{},[返回方法类型]{}，[返回方法名称]{}，[返回结果]{}", request.getServletPath(),
+                    request.getMethod(),method.getDeclaringClass().getName()+"."+method.getName(), param);
             return;
         }
         if (priLog == 2) {
-            log.debug("【返回方法路径】{},[返回方法名称]{}，[返回参数]{}", request.getPathInfo(), request.getMethod(), param);
+            log.info("【proto返回参数】[返回方法路径]{},[返回方法类型]{}，[返回方法名称]{}，[返回结果]{}", request.getServletPath(),
+                    request.getMethod(),method.getDeclaringClass().getName()+"."+method.getName(), param);
             return;
         }
         if (priLog == 3) {
-            log.error("【返回方法路径】{},[返回方法名称]{}，[返回参数]{}", request.getPathInfo(), request.getMethod(), param);
+            log.info("【proto返回参数】[返回方法路径]{},[返回方法类型]{}，[返回方法名称]{}，[返回结果]{}", request.getServletPath(),
+                    request.getMethod(),method.getDeclaringClass().getName()+"."+method.getName(), param);
             return;
         }
     }

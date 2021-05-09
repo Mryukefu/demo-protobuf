@@ -66,28 +66,31 @@ public class ProtobufBeanToPojoMethodArgumentResolver implements HandlerMethodAr
         ServletInputStream stream = request.getInputStream();
         byte[] buffer = new byte[len];
         stream.read(buffer, 0, len);
-        Class<? extends GeneratedMessageV3> aClass = ann.proToBeanClass();
-        Method parseFrom = aClass.getMethod("parseFrom", byte[].class);
-        GeneratedMessageV3 message = (GeneratedMessageV3) parseFrom.invoke(aClass, buffer);
+        Class<? extends GeneratedMessageV3> messageClass = ann.proToBeanClass();
+        Method parseFrom = messageClass.getMethod(ann.parseFromMethod(), byte[].class);
+        GeneratedMessageV3 message = (GeneratedMessageV3) parseFrom.invoke(messageClass, buffer);
         Object param = ProtoBeanUtils.toPojoBean(ann.paramPojoBeanClass(), message);
-        priLog(ann.priLog(), request, param);
+        priLog(ann.priLog(), request,parameter.getMethod(), param);
         return param;
     }
 
-    public void priLog(Integer priLog, HttpServletRequest request, Object param) {
+    public void priLog(Integer priLog, HttpServletRequest request,Method method, Object param) {
         if (priLog == null || priLog <= 0 || priLog >= 4) {
             return;
         }
         if (priLog == 1) {
-            log.info("【请求方法路径】{},[请求方法名称]{}，[请求参数]{}", request.getPathInfo(), request.getMethod(), param);
+            log.info("【proto入参】[请求方法路径]{},[请求方法类型]{}，[请求方法名称]{}，[请求参数]{}", request.getServletPath(),
+                    request.getMethod(),method.getDeclaringClass().getName()+"."+method.getName(), param);
             return;
         }
         if (priLog == 2) {
-            log.debug("【请求方法路径】{},[请求方法名称]{}，[请求参数]{}", request.getPathInfo(), request.getMethod(), param);
+            log.info("【proto入参】[请求方法路径]{},[请求方法类型]{}，[请求方法名称]{}，[请求参数]{}", request.getServletPath(),
+                    request.getMethod(),method.getDeclaringClass().getName()+"."+method.getName(), param);
             return;
         }
         if (priLog == 3) {
-            log.error("【请求方法路径】{},[请求方法名称]{}，[请求参数]{}", request.getPathInfo(), request.getMethod(), param);
+            log.info("【proto入参】[请求方法路径]{},[请求方法类型]{}，[请求方法名称]{}，[请求参数]{}", request.getServletPath(),
+                    request.getMethod(),method.getDeclaringClass().getName()+"."+method.getName(), param);
             return;
         }
 

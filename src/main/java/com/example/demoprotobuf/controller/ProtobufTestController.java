@@ -31,7 +31,7 @@ public class ProtobufTestController {
 
 
     @PostMapping(value="/demo/test",produces = "application/x-protobuf")
-    @ProtobufResponseModule(proToBean = PersonResultProto.PersonResult.class )
+    @ProtobufResponseModule(proToBean = PersonResultProto.PersonResult.class,priLog = 1)
     public JsonResult getPersonProto(@ProtobufRequestModule(proToBeanClass = PersonResultProto.PersonResult.class,
             paramPojoBeanClass = JsonResult.class) JsonResult jsonResult){
             //return JsonResult.fail("失败了");
@@ -47,13 +47,6 @@ public class ProtobufTestController {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         URI uri = new URI("http", null, "127.0.0.1", 9988, "/protobuf/demo/test", "", null);
         HttpPost post = new HttpPost(uri);
-        byte[] bytes = personResult.toByteArray();
-        System.out.println("入参数");
-        for (byte aByte : bytes) {
-            System.out.print(aByte);
-        }
-        JsonResult jsonResult1  = ProtoBeanUtils.toPojoBean(JsonResult.class, PersonResultProto.PersonResult.parseFrom(bytes));
-        System.out.println(jsonResult1);
         post.setEntity(new ByteArrayEntity(personResult.toByteArray()));
         post.setHeader("Content-Type", "application/x-protobuf");
         HttpResponse response = httpClient.execute(post);
@@ -61,11 +54,8 @@ public class ProtobufTestController {
         System.out.println(entity);
         JsonResult jsonResult = null;
         if (response.getStatusLine().getStatusCode() == 200) {
-             PersonResultProto.PersonResult resp = PersonResultProto.PersonResult.parseFrom(response.getEntity().getContent());
+            PersonResultProto.PersonResult resp = PersonResultProto.PersonResult.parseFrom(response.getEntity().getContent());
             jsonResult = ProtoBeanUtils.toPojoBean(JsonResult.class, resp);
-            System.out.println(jsonResult);
-        } else {
-            System.out.println(response.getStatusLine().getStatusCode());
         }
         return jsonResult;
 

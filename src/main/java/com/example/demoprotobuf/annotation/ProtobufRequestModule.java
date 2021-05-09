@@ -27,4 +27,7 @@ public @interface ProtobufRequestModule {
     /** 是否打印日志 日志级别1 - log,2 - debug,3 --err **/
     int priLog() default 1;
 
+    /** 字节流流转 GeneratedMessageV3 **/
+    String parseFromMethod() default "parseFrom";
+
 }
