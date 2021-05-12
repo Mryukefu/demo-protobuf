@@ -1,10 +1,13 @@
 package com.example.demoprotobuf.controller;
+import com.alibaba.fastjson.JSON;
 import com.example.demoprotobuf.annotation.ProtobufResponseModule;
 import com.example.demoprotobuf.annotation.ProtobufRequestModule;
+import com.example.demoprotobuf.entry.Person;
+import com.example.demoprotobuf.entry.PhoneNumber;
+import com.example.demoprotobuf.entry.contanst.LogEnum;
 import com.example.demoprotobuf.protoc.PersonResultProto;
-import com.example.demoprotobuf.utils.JsonResult;
-import com.example.demoprotobuf.utils.ProtoBeanUtils;
-import com.example.demoprotobuf.utils.ResultEnum;
+import com.example.demoprotobuf.utils.*;
+import com.example.demoprotobuf.entry.contanst.ResultEnum;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -16,6 +19,9 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -30,19 +36,33 @@ import java.net.URISyntaxException;
 public class ProtobufTestController {
 
 
-    @PostMapping(value="/demo/test",produces = "application/x-protobuf")
-    @ProtobufResponseModule(proToBean = PersonResultProto.PersonResult.class,priLog = 1)
-    public JsonResult getPersonProto(@ProtobufRequestModule(proToBeanClass = PersonResultProto.PersonResult.class,
-            paramPojoBeanClass = JsonResult.class) JsonResult jsonResult){
-            //return JsonResult.fail("失败了");
-            return  jsonResult;
+    @PostMapping(value="/demo/test")
+    @ResponseBody
+    @ProtobufResponseModule(proToBean = PersonResultProto.PersonResult.class,priLog = LogEnum.INFO )
+    public Object getPersonProto(){
+        Person person = new Person();
+        person.setEmail("1111");
+        person.setName("eeee");
+        person.setId(1111);
+        PhoneNumber phoneNumber = new PhoneNumber();
+        phoneNumber.setNumber("2222");
+        person.setPhones(Arrays.asList(phoneNumber));;
+        JsonResult jsonResult = new JsonResult(ResultEnum.SUCCESS);
+        Map<String, Object> map = new HashMap<>();
+        map.put("person",person);
+        map.put("person1",person);
+        Object target = PicBeanAddPropertiesUtil.getTarget(jsonResult, map);
+
+        return target;
+
+
 
     }
 
 
     @PostMapping(value = "/demo/param")
     @ResponseBody
-    public   JsonResult   param() throws IOException, URISyntaxException {
+    public JsonPeopleResult param() throws IOException, URISyntaxException {
         PersonResultProto.PersonResult personResult = getBuilder();
         CloseableHttpClient httpClient = HttpClients.createDefault();
         URI uri = new URI("http", null, "127.0.0.1", 9988, "/protobuf/demo/test", "", null);
@@ -50,12 +70,11 @@ public class ProtobufTestController {
         post.setEntity(new ByteArrayEntity(personResult.toByteArray()));
         post.setHeader("Content-Type", "application/x-protobuf");
         HttpResponse response = httpClient.execute(post);
-        HttpEntity entity = response.getEntity();
-        System.out.println(entity);
-        JsonResult jsonResult = null;
+
+        JsonPeopleResult jsonResult = null;
         if (response.getStatusLine().getStatusCode() == 200) {
             PersonResultProto.PersonResult resp = PersonResultProto.PersonResult.parseFrom(response.getEntity().getContent());
-            jsonResult = ProtoBeanUtils.toPojoBean(JsonResult.class, resp);
+            jsonResult = ProtoBeanUtils.toPojoBean(JsonPeopleResult.class, resp);
         }
         return jsonResult;
 

@@ -1,5 +1,6 @@
 package com.example.demoprotobuf.utils;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.google.protobuf.Message;
 import com.google.protobuf.util.JsonFormat;
@@ -55,7 +56,7 @@ public class ProtoBeanUtils {
         if (sourcePojoBean == null) {
             throw new IllegalArgumentException("No source pojo specified");
         }
-        String json = new Gson().toJson(sourcePojoBean);
+        String json = JSONObject.toJSONString(sourcePojoBean);
         JsonFormat.parser().merge(json, destBuilder);
     }
 }

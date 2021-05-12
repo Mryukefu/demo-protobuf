@@ -1,4 +1,4 @@
-package com.example.demoprotobuf.utils;
+package com.example.demoprotobuf.entry.contanst;
 
 
 
