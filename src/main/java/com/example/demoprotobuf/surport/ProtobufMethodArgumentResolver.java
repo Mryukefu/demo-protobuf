@@ -1,6 +1,7 @@
 package com.example.demoprotobuf.surport;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.example.demoprotobuf.annotation.ProtobufRequestModule;
 import com.example.demoprotobuf.annotation.ProtobufResponseModule;
 import com.example.demoprotobuf.entry.contanst.LogEnum;
@@ -80,6 +81,13 @@ public class ProtobufMethodArgumentResolver implements HandlerMethodArgumentReso
         GeneratedMessageV3 message = (GeneratedMessageV3) parseFrom.invoke(messageClass, buffer);
         Object param = ProtoBeanUtils.toPojoBean(parameter.getNestedParameterType(), message);
         priReqLog(ann.priLog(), request,parameter.getMethod(), param);
+        return param;
+    }
+
+    public Object getParam(HttpServletRequest request,MethodParameter parameter) throws Exception {
+        String jsonParam = request.getHeader("jsonParam");
+        JSONObject jsonObject = (JSONObject) JSONObject.parse(jsonParam);
+        Object param = JSONObject.toJavaObject(jsonObject, parameter.getNestedParameterType());
         return param;
     }
 
