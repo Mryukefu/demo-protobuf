@@ -39,21 +39,10 @@ public class ProtobufTestController {
     @PostMapping(value="/demo/test")
     @ResponseBody
     @ProtobufResponseModule(proToBean = PersonResultProto.PersonResult.class,priLog = LogEnum.INFO )
-    public Object getPersonProto(){
-        Person person = new Person();
-        person.setEmail("1111");
-        person.setName("eeee");
-        person.setId(1111);
-        PhoneNumber phoneNumber = new PhoneNumber();
-        phoneNumber.setNumber("2222");
-        person.setPhones(Arrays.asList(phoneNumber));;
-        JsonResult jsonResult = new JsonResult(ResultEnum.SUCCESS);
-        Map<String, Object> map = new HashMap<>();
-        map.put("person",person);
-        map.put("person1",person);
-        Object target = PicBeanAddPropertiesUtil.getTarget(jsonResult, map);
+    public JsonPeopleResult getPersonProto( @ProtobufRequestModule(proToBeanClass = PersonResultProto.PersonResult.class,priLog = LogEnum.INFO )JsonPeopleResult jsonPeopleResult ){
 
-        return target;
+
+        return jsonPeopleResult;
 
 
 
