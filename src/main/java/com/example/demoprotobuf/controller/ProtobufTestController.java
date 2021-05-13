@@ -41,7 +41,7 @@ public class ProtobufTestController {
     @ProtobufResponseModule(proToBean = PersonResultProto.PersonResult.class,priLog = LogEnum.INFO )
     public JsonPeopleResult getPersonProto( @ProtobufRequestModule(proToBeanClass = PersonResultProto.PersonResult.class,priLog = LogEnum.INFO )JsonPeopleResult jsonPeopleResult ){
 
-
+        ValidationUtil.assertFalse(false,"没有这个小号");
         return jsonPeopleResult;
 
 
